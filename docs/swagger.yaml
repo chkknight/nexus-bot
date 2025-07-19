@@ -1,0 +1,269 @@
+basePath: /api/v1
+definitions:
+  bot.IndicatorSignal:
+    properties:
+      name:
+        type: string
+      signal:
+        $ref: '#/definitions/bot.SignalType'
+      strength:
+        description: 0-1 confidence
+        type: number
+      timeframe:
+        $ref: '#/definitions/bot.Timeframe'
+      timestamp:
+        type: string
+      value:
+        description: actual indicator value
+        type: number
+    type: object
+  bot.SignalEngineStatus:
+    properties:
+      data_summary:
+        additionalProperties:
+          type: integer
+        type: object
+      last_signal:
+        $ref: '#/definitions/bot.TradingSignal'
+      last_update:
+        type: string
+      ready_status:
+        additionalProperties:
+          type: boolean
+        type: object
+      running:
+        type: boolean
+      symbol:
+        type: string
+    type: object
+  bot.SignalType:
+    enum:
+    - 0
+    - 1
+    - 2
+    type: integer
+    x-enum-varnames:
+    - Hold
+    - Buy
+    - Sell
+  bot.Timeframe:
+    enum:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    type: integer
+    x-enum-varnames:
+    - FiveMinute
+    - FifteenMinute
+    - FortyFiveMinute
+    - EightHour
+    - Daily
+  bot.TradingSignal:
+    properties:
+      confidence:
+        type: number
+      indicator_signals:
+        items:
+          $ref: '#/definitions/bot.IndicatorSignal'
+        type: array
+      reasoning:
+        type: string
+      signal:
+        $ref: '#/definitions/bot.SignalType'
+      stop_loss:
+        type: number
+      symbol:
+        type: string
+      target_price:
+        type: number
+      timestamp:
+        type: string
+    type: object
+  internal.APIInfo:
+    properties:
+      endpoints:
+        items:
+          type: string
+        type: array
+      message:
+        example: Trading Bot API
+        type: string
+      version:
+        example: 1.0.0
+        type: string
+    type: object
+  internal.ErrorResponse:
+    properties:
+      error:
+        example: No signal available yet, bot may still be initializing
+        type: string
+    type: object
+  internal.HealthResponse:
+    properties:
+      bot_running:
+        example: true
+        type: boolean
+      status:
+        example: healthy
+        type: string
+      symbol:
+        example: BTCUSD
+        type: string
+      timestamp:
+        example: "2023-01-01T12:00:00Z"
+        type: string
+    type: object
+  internal.IndicatorPrediction:
+    properties:
+      name:
+        example: RSI_5m
+        type: string
+      signal:
+        enum:
+        - BUY
+        - SELL
+        - HOLD
+        example: BUY
+        type: string
+      strength:
+        example: 0.85
+        type: number
+      timeframe:
+        example: 5m
+        type: string
+    type: object
+  internal.PredictionResponse:
+    properties:
+      confidence:
+        example: 0.75
+        type: number
+      current_price:
+        example: 50000.5
+        type: number
+      indicators:
+        items:
+          $ref: '#/definitions/internal.IndicatorPrediction'
+        type: array
+      prediction:
+        enum:
+        - HIGHER
+        - LOWER
+        - NEUTRAL
+        example: HIGHER
+        type: string
+      reasoning:
+        example: Strong buy signals detected across multiple indicators
+        type: string
+      symbol:
+        example: BTCUSD
+        type: string
+      timestamp:
+        example: "2023-01-01T12:00:00Z"
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: Multi-timeframe trading bot API for cryptocurrency price prediction
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://swagger.io/terms/
+  title: Trading Bot API
+  version: "1.0"
+paths:
+  /:
+    get:
+      consumes:
+      - application/json
+      description: Get general information about the trading bot API
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal.APIInfo'
+      summary: Get API information
+      tags:
+      - info
+  /health:
+    get:
+      consumes:
+      - application/json
+      description: Check if the trading bot API is healthy and running
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal.HealthResponse'
+      summary: Health check
+      tags:
+      - health
+  /predict:
+    get:
+      consumes:
+      - application/json
+      description: Get prediction for 5-minute price direction (HIGHER/LOWER/NEUTRAL)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal.PredictionResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/internal.ErrorResponse'
+      summary: Predict price direction
+      tags:
+      - prediction
+  /signals:
+    get:
+      consumes:
+      - application/json
+      description: Get the most recent trading signal generated by the bot
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/bot.TradingSignal'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal.ErrorResponse'
+      summary: Get latest signals
+      tags:
+      - signals
+  /status:
+    get:
+      consumes:
+      - application/json
+      description: Get detailed status information about the trading bot
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/bot.SignalEngineStatus'
+      summary: Get bot status
+      tags:
+      - status
+schemes:
+- http
+swagger: "2.0"

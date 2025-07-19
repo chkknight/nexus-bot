@@ -1,0 +1,38 @@
+{
+  "rsi": {
+    "period": 14,
+    "overbought": 70,
+    "oversold": 30
+  },
+  "macd": {
+    "fast_period": 12,
+    "slow_period": 26,
+    "signal_period": 9
+  },
+  "volume": {
+    "period": 20,
+    "volume_threshold": 15000
+  },
+  "trend": {
+    "short_ma": 20,
+    "long_ma": 50
+  },
+  "support_resistance": {
+    "period": 20,
+    "threshold": 0.02
+  },
+  "ichimoku": {
+    "tenkan_period": 9,
+    "kijun_period": 26,
+    "senkou_period": 52,
+    "displacement": 26
+  },
+  "min_confidence": 0.6,
+  "symbol": "BTCUSDT",
+  "binance": {
+    "api_key": "YOUR_BINANCE_API_KEY_HERE",
+    "secret_key": "YOUR_BINANCE_SECRET_KEY_HERE",
+    "use_testnet": false
+  },
+  "data_provider": "binance"
+} 

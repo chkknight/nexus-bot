@@ -1,0 +1,193 @@
+{
+  "examples": {
+    "all_indicators_enabled": {
+      "rsi": {
+        "enabled": true,
+        "period": 14,
+        "overbought": 70.0,
+        "oversold": 30.0
+      },
+      "macd": {
+        "enabled": true,
+        "fast_period": 12,
+        "slow_period": 26,
+        "signal_period": 9
+      },
+      "volume": {
+        "enabled": true,
+        "period": 20,
+        "volume_threshold": 15000.0
+      },
+      "trend": {
+        "enabled": true,
+        "short_ma": 20,
+        "long_ma": 50
+      },
+      "support_resistance": {
+        "enabled": true,
+        "period": 20,
+        "threshold": 0.02
+      },
+      "ichimoku": {
+        "enabled": true,
+        "tenkan_period": 9,
+        "kijun_period": 26,
+        "senkou_period": 52,
+        "displacement": 26
+      },
+      "mfi": {
+        "enabled": true,
+        "period": 14,
+        "overbought": 80.0,
+        "oversold": 20.0
+      }
+    },
+    "trend_only_strategy": {
+      "rsi": {
+        "enabled": false,
+        "period": 14,
+        "overbought": 70.0,
+        "oversold": 30.0
+      },
+      "macd": {
+        "enabled": true,
+        "fast_period": 12,
+        "slow_period": 26,
+        "signal_period": 9
+      },
+      "volume": {
+        "enabled": false,
+        "period": 20,
+        "volume_threshold": 15000.0
+      },
+      "trend": {
+        "enabled": true,
+        "short_ma": 20,
+        "long_ma": 50
+      },
+      "support_resistance": {
+        "enabled": true,
+        "period": 20,
+        "threshold": 0.02
+      },
+      "ichimoku": {
+        "enabled": true,
+        "tenkan_period": 9,
+        "kijun_period": 26,
+        "senkou_period": 52,
+        "displacement": 26
+      },
+      "mfi": {
+        "enabled": false,
+        "period": 14,
+        "overbought": 80.0,
+        "oversold": 20.0
+      }
+    },
+    "momentum_only_strategy": {
+      "rsi": {
+        "enabled": true,
+        "period": 14,
+        "overbought": 70.0,
+        "oversold": 30.0
+      },
+      "macd": {
+        "enabled": true,
+        "fast_period": 12,
+        "slow_period": 26,
+        "signal_period": 9
+      },
+      "volume": {
+        "enabled": true,
+        "period": 20,
+        "volume_threshold": 15000.0
+      },
+      "trend": {
+        "enabled": false,
+        "short_ma": 20,
+        "long_ma": 50
+      },
+      "support_resistance": {
+        "enabled": false,
+        "period": 20,
+        "threshold": 0.02
+      },
+      "ichimoku": {
+        "enabled": false,
+        "tenkan_period": 9,
+        "kijun_period": 26,
+        "senkou_period": 52,
+        "displacement": 26
+      },
+      "mfi": {
+        "enabled": true,
+        "period": 14,
+        "overbought": 80.0,
+        "oversold": 20.0
+      }
+    },
+    "minimal_strategy": {
+      "rsi": {
+        "enabled": true,
+        "period": 14,
+        "overbought": 70.0,
+        "oversold": 30.0
+      },
+      "macd": {
+        "enabled": false,
+        "fast_period": 12,
+        "slow_period": 26,
+        "signal_period": 9
+      },
+      "volume": {
+        "enabled": false,
+        "period": 20,
+        "volume_threshold": 15000.0
+      },
+      "trend": {
+        "enabled": true,
+        "short_ma": 20,
+        "long_ma": 50
+      },
+      "support_resistance": {
+        "enabled": false,
+        "period": 20,
+        "threshold": 0.02
+      },
+      "ichimoku": {
+        "enabled": false,
+        "tenkan_period": 9,
+        "kijun_period": 26,
+        "senkou_period": 52,
+        "displacement": 26
+      },
+      "mfi": {
+        "enabled": false,
+        "period": 14,
+        "overbought": 80.0,
+        "oversold": 20.0
+      }
+    }
+  },
+  "usage_examples": {
+    "programmatic_control": {
+      "description": "Use ConfigManager methods to control indicators",
+      "methods": [
+        "configManager.EnableIndicator(\"rsi\")",
+        "configManager.DisableIndicator(\"macd\")",
+        "configManager.ToggleIndicator(\"ichimoku\")",
+        "configManager.EnableIndicator(\"all\")",
+        "configManager.DisableIndicator(\"all\")",
+        "enabledList := configManager.GetEnabledIndicators()"
+      ]
+    },
+    "json_control": {
+      "description": "Control via JSON configuration",
+      "example": {
+        "rsi": {"enabled": true},
+        "macd": {"enabled": false},
+        "volume": {"enabled": true}
+      }
+    }
+  }
+} 
