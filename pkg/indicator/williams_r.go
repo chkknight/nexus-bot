@@ -168,9 +168,9 @@ func (wr *WilliamsR) calculateSignalStrength(current, previous float64) float64 
 	// Combine strengths
 	totalStrength := baseStrength + momentumStrength + reversalStrength + fastResponseBoost
 
-	// Normalize to 0-1 range
-	if totalStrength > 1.0 {
-		totalStrength = 1.0
+	// FIXED: Cap to prevent exceeding 1.0 from boost combinations
+	if totalStrength > 0.85 {
+		totalStrength = 0.85
 	}
 
 	return totalStrength
@@ -228,13 +228,13 @@ func (wr *WilliamsR) GetEnhanced5MinuteSignal() (SignalType, float64) {
 		// Quick momentum detection
 		if current > previous && previous > older && current > -70 {
 			// Strong upward momentum from oversold
-			strength = math.Min(strength*1.2, 1.0)
+			strength = math.Min(strength*1.2, 0.85) // FIXED: Cap to 0.85
 			if signal == Hold && strength > 0.5 {
 				signal = Buy
 			}
 		} else if current < previous && previous < older && current < -30 {
 			// Strong downward momentum from overbought
-			strength = math.Min(strength*1.2, 1.0)
+			strength = math.Min(strength*1.2, 0.85) // FIXED: Cap to 0.85
 			if signal == Hold && strength > 0.5 {
 				signal = Sell
 			}
@@ -247,12 +247,12 @@ func (wr *WilliamsR) GetEnhanced5MinuteSignal() (SignalType, float64) {
 
 			// Bullish divergence (price down, Williams %R up)
 			if priceChange < 0 && williamsRChange > 0 && current < -50 {
-				strength = math.Min(strength*1.3, 1.0)
+				strength = math.Min(strength*1.3, 0.85) // FIXED: Cap to 0.85
 				signal = Buy
 			}
 			// Bearish divergence (price up, Williams %R down)
 			if priceChange > 0 && williamsRChange < 0 && current > -50 {
-				strength = math.Min(strength*1.3, 1.0)
+				strength = math.Min(strength*1.3, 0.85) // FIXED: Cap to 0.85
 				signal = Sell
 			}
 		}

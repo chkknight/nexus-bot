@@ -52,11 +52,11 @@ func DefaultConfig() Config {
 			Oversold:   20.0, // Oversold level
 		},
 		BollingerBands: BollingerBandsConfig{
-			Enabled:       false, // BollingerBands disabled by default
-			Period:        20,    // Standard BB period
-			StandardDev:   2.0,   // Standard deviation multiplier
-			OverboughtStd: 0.8,   // Overbought threshold
-			OversoldStd:   0.2,   // Oversold threshold
+			Enabled:       true, // ENABLED: Bollinger Bands for mean reversion signals
+			Period:        20,   // Standard BB period
+			StandardDev:   2.0,  // Standard deviation multiplier
+			OverboughtStd: 0.8,  // Overbought threshold
+			OversoldStd:   0.2,  // Oversold threshold
 		},
 		Stochastic: StochasticConfig{
 			Enabled:         true, // Stochastic enabled for 5-minute trading
@@ -104,6 +104,18 @@ func DefaultConfig() Config {
 			CompletionBoost:    1.5,
 			MaxLookback:        100,
 		},
+		ChannelAnalysis: ChannelAnalysisConfig{
+			Enabled:          true, // Channel Analysis enabled by default
+			LookbackPeriod:   20,   // 20 period lookback (requires 26+ candles)
+			ChannelThreshold: 0.2,  // 0.2% threshold for sensitive channel detection
+			SignalBoost:      1.4,  // 1.4x boost for confirmed channel signals
+		},
+		ATR: ATRConfig{
+			Enabled:    true,  // ATR enabled by default
+			Period:     7,     // Pine Script: Length 7 for ATR calculation
+			Multiplier: 1.0,   // Pine Script: ATR Multiplier 1 for trailing stop distance
+			UseShorts:  false, // Disable shorts for spot trading
+		},
 		MinConfidence: 0.6, // 60% minimum confidence
 		Symbol:        "BTCUSDT",
 		Binance: BinanceConfig{
@@ -111,7 +123,7 @@ func DefaultConfig() Config {
 			SecretKey:  "",
 			UseTestnet: false,
 		},
-		DataProvider: "sample", // Default to sample data
+		DataProvider: "binance", // FIXED: Use live Binance futures data instead of sample
 	}
 }
 
@@ -415,8 +427,16 @@ func GetConfigSummary(config Config) string {
 		summary += fmt.Sprintf("  ❌ Elliott Wave: DISABLED\n")
 	}
 
+	if config.ChannelAnalysis.Enabled {
+		summary += fmt.Sprintf("  ✅ Channel Analysis: Lookback %d, Threshold %.1f%%, Boost %.1fx\n",
+			config.ChannelAnalysis.LookbackPeriod, config.ChannelAnalysis.ChannelThreshold*100, config.ChannelAnalysis.SignalBoost)
+		enabledCount++
+	} else {
+		summary += fmt.Sprintf("  ❌ Channel Analysis: DISABLED\n")
+	}
+
 	summary += fmt.Sprintf("══════════════════════════════════════\n")
-	summary += fmt.Sprintf("🎯 Active Indicators: %d/13\n", enabledCount)
+	summary += fmt.Sprintf("🎯 Active Indicators: %d/14\n", enabledCount)
 	summary += fmt.Sprintf("📊 Min Confidence: %.1f%%\n", config.MinConfidence*100)
 	summary += fmt.Sprintf("══════════════════════════════════════\n")
 

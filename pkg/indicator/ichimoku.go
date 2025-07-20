@@ -295,7 +295,7 @@ func (ich *Ichimoku) calculateNuancedStrength(currentPrice float64, cloudSignal 
 	}
 
 	// Ensure strength is within bounds
-	strength := math.Min(1.0, math.Max(0.1, baseStrength))
+	strength := math.Min(0.85, math.Max(0.1, baseStrength)) // FIXED: Cap at 0.85 instead of 1.0
 
 	return strength
 }
@@ -339,12 +339,12 @@ func (ich *Ichimoku) calculateNuanced5MinuteStrength(currentPrice float64, cloud
 
 			// Boost strength when Tenkan-Kijun alignment matches cloud signal
 			if (cloudSignal > 0 && tenkan > kijun) || (cloudSignal < 0 && tenkan < kijun) {
-				baseStrength = math.Min(1.0, baseStrength*1.2) // 20% boost for alignment
+				baseStrength = math.Min(0.85, baseStrength*1.2) // FIXED: Cap to 0.85
 			}
 		}
 	}
 
-	return math.Min(1.0, math.Max(0.1, baseStrength))
+	return math.Min(0.85, math.Max(0.1, baseStrength)) // FIXED: Cap to 0.85
 }
 
 // GetSignal generates a trading signal with 5-minute optimization
@@ -618,7 +618,9 @@ func (ich *Ichimoku) GetDetailedSignal(candles []Candle, currentPrice float64) I
 	}
 
 	// Normalize strength
-	strength = math.Min(1.0, strength)
+	if strength > 0.85 { // FIXED: Cap to 0.85 instead of 1.0
+		strength = 0.85
+	}
 
 	return IchimokuSignal{
 		Signal:    signal,

@@ -1,0 +1,92 @@
+{
+  "symbol": "BTCUSDT",
+  "current_price": 117980.6,
+  "prediction": "LOWER",
+  "confidence": 0.38,
+  "reasoning": "Bearish consensus from 5-minute indicators (bias: -30.0%). Expected price: 117941.67 in 5.5 minutes (movement: -$38.93)",
+  "timestamp": "2025-07-19T19:40:12Z",
+  "prediction_time": "2025-07-19T19:45:42Z",
+  "time_to_target": "5m30s",
+  "indicators": [
+    {
+      "name": "RSI_5m",
+      "signal": "HOLD",
+      "strength": 0.9449332561720161,
+      "timeframe": "5m"
+    },
+    {
+      "name": "MACD_5m",
+      "signal": "HOLD",
+      "strength": 0.3,
+      "timeframe": "5m"
+    },
+    {
+      "name": "Volume_5m",
+      "signal": "HOLD",
+      "strength": 0.2,
+      "timeframe": "5m"
+    },
+    {
+      "name": "Trend_5m",
+      "signal": "HOLD",
+      "strength": 0.4,
+      "timeframe": "5m"
+    },
+    {
+      "name": "S&R_5m",
+      "signal": "SELL",
+      "strength": 0.9844226710832094,
+      "timeframe": "5m"
+    },
+    {
+      "name": "Ichimoku_5m",
+      "signal": "SELL",
+      "strength": 0.584786053882718,
+      "timeframe": "5m"
+    },
+    {
+      "name": "ReverseMFI_5m",
+      "signal": "HOLD",
+      "strength": 0.3279539265063056,
+      "timeframe": "5m"
+    },
+    {
+      "name": "BollingerBands_5m",
+      "signal": "HOLD",
+      "strength": 0.3,
+      "timeframe": "5m"
+    },
+    {
+      "name": "Stochastic",
+      "signal": "HOLD",
+      "strength": 0.66,
+      "timeframe": "5m"
+    },
+    {
+      "name": "Williams %R",
+      "signal": "BUY",
+      "strength": 1,
+      "timeframe": "5m"
+    },
+    {
+      "name": "PinBar",
+      "signal": "HOLD",
+      "strength": 0,
+      "timeframe": "5m"
+    },
+    {
+      "name": "EMA",
+      "signal": "HOLD",
+      "strength": 0,
+      "timeframe": "5m"
+    },
+    {
+      "name": "ElliottWave",
+      "signal": "SELL",
+      "strength": 1.2,
+      "timeframe": "5m"
+    }
+  ],
+  "five_minute_signal": "Strong BEARISH momentum - 3 indicators favor downward movement",
+  "prediction_stage": "INITIAL"
+}

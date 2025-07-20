@@ -100,44 +100,45 @@ type TechnicalIndicator interface {
 
 // Configuration types for each indicator
 
-// RSIConfig represents configuration for RSI indicator
+// RSIConfig holds RSI (Relative Strength Index) configuration
 type RSIConfig struct {
-	Enabled    bool    `json:"enabled"` // Feature flag to enable/disable RSI
-	Period     int     `json:"period"`
-	Overbought float64 `json:"overbought"`
-	Oversold   float64 `json:"oversold"`
+	Enabled    bool    `json:"enabled"`    // Feature flag to enable/disable RSI
+	Period     int     `json:"period"`     // RSI calculation period (default: 14)
+	Overbought float64 `json:"overbought"` // Overbought threshold (default: 70)
+	Oversold   float64 `json:"oversold"`   // Oversold threshold (default: 30)
 }
 
-// MACDConfig represents configuration for MACD indicator
+// MACDConfig holds MACD (Moving Average Convergence Divergence) configuration
 type MACDConfig struct {
-	Enabled      bool `json:"enabled"` // Feature flag to enable/disable MACD
-	FastPeriod   int  `json:"fast_period"`
-	SlowPeriod   int  `json:"slow_period"`
-	SignalPeriod int  `json:"signal_period"`
+	Enabled      bool `json:"enabled"`       // Feature flag to enable/disable MACD
+	FastPeriod   int  `json:"fast_period"`   // Fast EMA period (default: 12)
+	SlowPeriod   int  `json:"slow_period"`   // Slow EMA period (default: 26)
+	SignalPeriod int  `json:"signal_period"` // Signal line EMA period (default: 9)
 }
 
-// VolumeConfig represents configuration for Volume indicator
+// VolumeConfig holds Volume indicator configuration
 type VolumeConfig struct {
-	Enabled         bool    `json:"enabled"` // Feature flag to enable/disable Volume analysis
-	Period          int     `json:"period"`
-	VolumeThreshold float64 `json:"volume_threshold"`
+	Enabled         bool    `json:"enabled"`          // Feature flag to enable/disable Volume
+	Period          int     `json:"period"`           // Volume SMA period (default: 20)
+	VolumeThreshold float64 `json:"volume_threshold"` // Volume spike threshold (default: 15000)
 }
 
-// TrendConfig represents configuration for Trend indicator
+// TrendConfig holds Trend indicator configuration
 type TrendConfig struct {
-	Enabled bool `json:"enabled"` // Feature flag to enable/disable Trend analysis
-	ShortMA int  `json:"short_ma"`
-	LongMA  int  `json:"long_ma"`
+	Enabled   bool    `json:"enabled"`   // Feature flag to enable/disable Trend
+	ShortMA   int     `json:"short_ma"`  // Short moving average period (default: 20)
+	LongMA    int     `json:"long_ma"`   // Long moving average period (default: 50)
+	Threshold float64 `json:"threshold"` // Trend strength threshold
 }
 
-// SupportResistanceConfig represents configuration for Support/Resistance indicator
+// SupportResistanceConfig holds Support/Resistance configuration
 type SupportResistanceConfig struct {
-	Enabled   bool    `json:"enabled"` // Feature flag to enable/disable Support/Resistance
-	Period    int     `json:"period"`
-	Threshold float64 `json:"threshold"`
+	Enabled   bool    `json:"enabled"`   // Feature flag to enable/disable Support/Resistance
+	Period    int     `json:"period"`    // Lookback period for S/R calculation (default: 20)
+	Threshold float64 `json:"threshold"` // S/R level threshold (default: 0.02 = 2%)
 }
 
-// IchimokuConfig represents configuration for Ichimoku Cloud indicator
+// IchimokuConfig holds Ichimoku Cloud configuration
 type IchimokuConfig struct {
 	Enabled      bool `json:"enabled"`       // Feature flag to enable/disable Ichimoku Cloud
 	TenkanPeriod int  `json:"tenkan_period"` // Conversion Line period (default: 9)
@@ -146,21 +147,21 @@ type IchimokuConfig struct {
 	Displacement int  `json:"displacement"`  // Cloud displacement (default: 26)
 }
 
-// MFIConfig represents configuration for Money Flow Index indicator
-type MFIConfig struct {
-	Enabled    bool    `json:"enabled"`    // Feature flag to enable/disable Reverse-MFI
-	Period     int     `json:"period"`     // Period for MFI calculation (default: 14)
-	Overbought float64 `json:"overbought"` // Overbought level (default: 80)
-	Oversold   float64 `json:"oversold"`   // Oversold level (default: 20)
-}
-
-// BollingerBandsConfig represents configuration for Bollinger Bands indicator
+// BollingerBandsConfig holds Bollinger Bands configuration
 type BollingerBandsConfig struct {
 	Enabled       bool    `json:"enabled"`        // Feature flag to enable/disable Bollinger Bands
 	Period        int     `json:"period"`         // Period for moving average and std dev (default: 20)
 	StandardDev   float64 `json:"standard_dev"`   // Standard deviation multiplier (default: 2.0)
 	OverboughtStd float64 `json:"overbought_std"` // Overbought threshold (default: 0.8)
 	OversoldStd   float64 `json:"oversold_std"`   // Oversold threshold (default: 0.2)
+}
+
+// MFIConfig holds Money Flow Index configuration
+type MFIConfig struct {
+	Enabled    bool    `json:"enabled"`    // Feature flag to enable/disable MFI
+	Period     int     `json:"period"`     // MFI calculation period (default: 14)
+	Overbought float64 `json:"overbought"` // Overbought threshold (default: 80)
+	Oversold   float64 `json:"oversold"`   // Oversold threshold (default: 20)
 }
 
 // PivotPoint represents a support or resistance level

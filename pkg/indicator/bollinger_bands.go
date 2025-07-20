@@ -342,13 +342,13 @@ func (bb *BollingerBands) GetEnhanced5MinuteSignal(candles []Candle, currentPric
 		strength += 0.1 // Boost signals in volatile conditions
 	}
 
-	// Mean reversion in extreme zones (5-minute specific)
+	// Mean reversion in extreme zones - FIXED: No more hardcoded 1.0 strength
 	if currentPosition <= 0.05 {
 		signal = Buy
-		strength = 1.0 // Maximum strength for extreme oversold
+		strength = 0.8 // Strong but not maximum for extreme oversold
 	} else if currentPosition >= 0.95 {
 		signal = Sell
-		strength = 1.0 // Maximum strength for extreme overbought
+		strength = 0.8 // Strong but not maximum for extreme overbought
 	}
 
 	// Normalize strength

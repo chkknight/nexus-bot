@@ -183,43 +183,43 @@ func (s *Stochastic) GetCurrentSignal() (SignalType, float64) {
 	return signal, strength
 }
 
-// calculateSignalStrength calculates the strength of the signal
+// calculateSignalStrength calculates the strength of the signal - FIXED: More conservative
 func (s *Stochastic) calculateSignalStrength(currentK, currentD, previousK, previousD float64) float64 {
 	baseStrength := 0.0
 
-	// Position-based strength
+	// Position-based strength - FIXED: More conservative values
 	if currentK > s.config.Overbought && currentD > s.config.Overbought {
-		baseStrength = 0.8 // Strong overbought
+		baseStrength = 0.6 // FIXED: Reduced from 0.8 - not maximum confidence
 	} else if currentK < s.config.Oversold && currentD < s.config.Oversold {
-		baseStrength = 0.8 // Strong oversold
+		baseStrength = 0.6 // FIXED: Reduced from 0.8 - not maximum confidence
 	} else if currentK > 70 || currentD > 70 {
-		baseStrength = 0.6 // Moderate overbought
+		baseStrength = 0.4 // FIXED: Reduced from 0.6 - moderate
 	} else if currentK < 30 || currentD < 30 {
-		baseStrength = 0.6 // Moderate oversold
+		baseStrength = 0.4 // FIXED: Reduced from 0.6 - moderate
 	} else {
-		baseStrength = 0.4 // Neutral zone
+		baseStrength = 0.3 // FIXED: Reduced from 0.4 - neutral zone
 	}
 
-	// Crossover strength
+	// Crossover strength - FIXED: Smaller contribution
 	crossoverStrength := 0.0
 	if (currentK > currentD && previousK <= previousD) || (currentK < currentD && previousK >= previousD) {
-		crossoverStrength = 0.3 // Crossover detected
+		crossoverStrength = 0.15 // FIXED: Reduced from 0.3
 	}
 
-	// Momentum strength
+	// Momentum strength - FIXED: Smaller contribution
 	momentumStrength := 0.0
 	kMomentum := math.Abs(currentK - previousK)
 	dMomentum := math.Abs(currentD - previousD)
 	if kMomentum > 5 || dMomentum > 3 {
-		momentumStrength = 0.2 * s.config.MomentumBoost
+		momentumStrength = 0.1 * s.config.MomentumBoost // FIXED: Reduced from 0.2
 	}
 
-	// Combine strengths
-	totalStrength := baseStrength + crossoverStrength + momentumStrength
+	// FIXED: Use weighted average instead of sum to prevent exceeding reasonable strength
+	totalStrength := (baseStrength * 0.6) + (crossoverStrength * 0.3) + (momentumStrength * 0.1)
 
-	// Normalize to 0-1 range
-	if totalStrength > 1.0 {
-		totalStrength = 1.0
+	// Cap at reasonable maximum - FIXED: Lower maximum
+	if totalStrength > 0.85 {
+		totalStrength = 0.85 // FIXED: Max 0.85 instead of 1.0
 	}
 
 	return totalStrength
@@ -263,16 +263,16 @@ func (s *Stochastic) GetEnhanced5MinuteSignal() (SignalType, float64) {
 		currentK := s.slowKValues[len(s.slowKValues)-1]
 		_ = s.dValues[len(s.dValues)-1] // currentD not used
 
-		// Quick momentum detection for 5-minute
+		// Quick momentum detection for 5-minute - FIXED: More conservative strength
 		if len(s.kValues) >= 3 {
 			recent := s.kValues[len(s.kValues)-3:]
 			if recent[2] > recent[1] && recent[1] > recent[0] && currentK < 40 {
 				// Strong upward momentum in lower territory
-				strength = math.Min(strength*1.2, 1.0)
+				strength = math.Min(strength*1.15, 0.85) // FIXED: Max 0.85 instead of 1.0
 				signal = Buy
 			} else if recent[2] < recent[1] && recent[1] < recent[0] && currentK > 60 {
 				// Strong downward momentum in upper territory
-				strength = math.Min(strength*1.2, 1.0)
+				strength = math.Min(strength*1.15, 0.85) // FIXED: Max 0.85 instead of 1.0
 				signal = Sell
 			}
 		}

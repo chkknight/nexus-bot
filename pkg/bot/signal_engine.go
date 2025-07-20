@@ -262,22 +262,28 @@ type SignalEngineStatus struct {
 
 // TradingBot is the main trading bot that uses the signal engine
 type TradingBot struct {
-	config       Config
-	signalEngine *SignalEngine
-	ctx          context.Context
-	cancel       context.CancelFunc
-	wg           sync.WaitGroup
+	config        Config
+	signalEngine  *SignalEngine
+	tradeExecutor *TradeExecutor // Pine Script ATR strategy trading engine
+	ctx           context.Context
+	cancel        context.CancelFunc
+	wg            sync.WaitGroup
 }
 
 // NewTradingBot creates a new trading bot
 func NewTradingBot(config Config) *TradingBot {
 	ctx, cancel := context.WithCancel(context.Background())
 
+	// Create trade executor with initial balance (default: $10,000 for testing)
+	initialBalance := 10000.0 // $10,000 demo balance
+	tradeExecutor := NewTradeExecutor(config, initialBalance)
+
 	return &TradingBot{
-		config:       config,
-		signalEngine: NewSignalEngine(config),
-		ctx:          ctx,
-		cancel:       cancel,
+		config:        config,
+		signalEngine:  NewSignalEngine(config),
+		tradeExecutor: tradeExecutor,
+		ctx:           ctx,
+		cancel:        cancel,
 	}
 }
 
@@ -379,25 +385,59 @@ func (tb *TradingBot) EnsureDataAvailable() error {
 	return nil
 }
 
+// 🔥 NEW: ForceFreshDataUpdate ensures fresh Binance data for each prediction call
+func (tb *TradingBot) ForceFreshDataUpdate() error {
+	if tb.signalEngine == nil {
+		return fmt.Errorf("signal engine not initialized")
+	}
+
+	// Initialize data provider if not already done
+	if tb.signalEngine.dataProvider.primary == nil {
+		if err := tb.signalEngine.initializeDataProvider(); err != nil {
+			return fmt.Errorf("failed to initialize data provider: %w", err)
+		}
+	}
+
+	// FORCE fresh data fetch from Binance (bypass cache)
+	log.Printf("🔄 FORCING fresh Binance data update for %s...", tb.config.Symbol)
+	if err := tb.signalEngine.dataProvider.LoadHistoricalDataForAllTimeframes(tb.config.Symbol, tb.signalEngine.timeframeManager); err != nil {
+		return fmt.Errorf("failed to fetch fresh Binance data: %w", err)
+	}
+
+	// Validate we have sufficient data after update
+	if !tb.signalEngine.timeframeManager.IsReady() {
+		return fmt.Errorf("insufficient data after fresh fetch")
+	}
+
+	log.Printf("✅ Fresh Binance data loaded successfully")
+	return nil
+}
+
 // GenerateImmediatePrediction generates a trading signal immediately using available or freshly fetched data
 func (tb *TradingBot) GenerateImmediatePrediction() (*TradingSignal, error) {
 	if tb.signalEngine == nil {
 		return nil, fmt.Errorf("signal engine not initialized")
 	}
 
-	// Ensure data is available
-	if err := tb.EnsureDataAvailable(); err != nil {
-		return nil, fmt.Errorf("failed to ensure data availability: %w", err)
+	// 🔥 FORCE fresh Binance data update for each prediction call
+	if err := tb.ForceFreshDataUpdate(); err != nil {
+		return nil, fmt.Errorf("failed to fetch fresh Binance data: %w", err)
 	}
 
-	// Generate signal immediately
-	tb.signalEngine.generateSignal()
-
-	// Return the last generated signal
-	signal := tb.signalEngine.GetLastSignal()
-	if signal == nil {
-		return nil, fmt.Errorf("failed to generate signal")
+	// Generate signal SYNCHRONOUSLY for API (not the async version used by real-time engine)
+	ctx, err := tb.signalEngine.timeframeManager.GetMultiTimeframeContext()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get multi-timeframe context: %w", err)
 	}
+
+	// Generate fresh signal directly using signal aggregator with fresh data
+	signal, err := tb.signalEngine.signalAggregator.GenerateSignal(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to generate fresh signal: %w", err)
+	}
+
+	log.Printf("🎯 Generated fresh prediction with latest Binance data - Signal: %s, Confidence: %.1f%%",
+		signal.Signal.String(), signal.Confidence*100)
 
 	return signal, nil
 }
@@ -430,7 +470,7 @@ func (tb *TradingBot) handleErrors() {
 	}
 }
 
-// processSignal handles a trading signal
+// processSignal handles a trading signal and executes trades
 func (tb *TradingBot) processSignal(signal *TradingSignal) {
 	// Log the signal
 	log.Printf("📊 SIGNAL: %s %s", signal.Symbol, signal.Signal.String())
@@ -450,10 +490,106 @@ func (tb *TradingBot) processSignal(signal *TradingSignal) {
 		log.Printf("     %s: %s (%.2f)", indSig.Name, indSig.Signal.String(), indSig.Strength)
 	}
 
-	// Here you would implement actual trading logic
-	// For now, we just log the signal
+	// Get current price for trade execution
+	currentPrice, err := tb.GetCurrentPrice()
+	if err != nil {
+		log.Printf("❌ Failed to get current price: %v", err)
+		return
+	}
 
-	// TODO: Implement trade execution
-	// TODO: Implement position management
-	// TODO: Implement risk management
+	// Get ATR trailing stop value
+	var atrTrailStop float64 = 0
+
+	// Get ATR indicator from timeframe manager to get trailing stop value
+	if tb.signalEngine.signalAggregator != nil {
+		// Look for ATR indicator in the signal
+		for _, indSig := range signal.IndicatorSignals {
+			if indSig.Name == "ATR_5m" {
+				atrTrailStop = indSig.Value // Use ATR indicator value as trailing stop
+				break
+			}
+		}
+	}
+
+	// If no ATR trailing stop found, calculate basic stop based on current price
+	if atrTrailStop == 0 {
+		// Default stop loss calculation: current price ± (ATR multiplier × estimated volatility)
+		estimatedVolatility := currentPrice * 0.02 // 2% estimated volatility
+		if signal.Signal == Buy {
+			atrTrailStop = currentPrice - (tb.config.ATR.Multiplier * estimatedVolatility)
+		} else if signal.Signal == Sell {
+			atrTrailStop = currentPrice + (tb.config.ATR.Multiplier * estimatedVolatility)
+		}
+	}
+
+	// Execute trade via Pine Script ATR strategy
+	if err := tb.tradeExecutor.ExecuteSignal(signal, currentPrice, atrTrailStop); err != nil {
+		log.Printf("❌ Trade execution failed: %v", err)
+	}
+
+	// Log current trading status
+	position := tb.tradeExecutor.GetCurrentPosition()
+	if position != nil {
+		log.Printf("📍 Current Position: %s %.6f @ $%.2f (PnL: $%.2f)",
+			position.Side, position.Quantity, position.EntryPrice, position.PnL)
+		log.Printf("🛡️  ATR Trailing Stop: $%.2f", position.ATRTrailStop)
+	} else {
+		log.Printf("📍 No open position")
+	}
+}
+
+// GetTradingStatus returns current trading status
+func (tb *TradingBot) GetTradingStatus() interface{} {
+	if tb.tradeExecutor == nil {
+		return map[string]interface{}{
+			"enabled": false,
+			"error":   "Trade executor not initialized",
+		}
+	}
+	return tb.tradeExecutor.GetStatus()
+}
+
+// GetCurrentTradingPosition returns current trading position
+func (tb *TradingBot) GetCurrentTradingPosition() *Position {
+	if tb.tradeExecutor == nil {
+		return nil
+	}
+	return tb.tradeExecutor.GetCurrentPosition()
+}
+
+// GetTradeHistory returns recent trade history
+func (tb *TradingBot) GetTradeHistory(limit int) []*Trade {
+	if tb.tradeExecutor == nil {
+		return []*Trade{}
+	}
+	return tb.tradeExecutor.GetTradeHistory(limit)
+}
+
+// EnableTrading enables trade execution
+func (tb *TradingBot) EnableTrading() {
+	if tb.tradeExecutor != nil {
+		tb.tradeExecutor.Enable()
+	}
+}
+
+// DisableTrading disables trade execution
+func (tb *TradingBot) DisableTrading() {
+	if tb.tradeExecutor != nil {
+		tb.tradeExecutor.Disable()
+	}
+}
+
+// ForceClosePosition manually closes current position
+func (tb *TradingBot) ForceClosePosition() error {
+	if tb.tradeExecutor == nil {
+		return fmt.Errorf("trade executor not initialized")
+	}
+
+	// Get current price
+	currentPrice, err := tb.GetCurrentPrice()
+	if err != nil {
+		return fmt.Errorf("failed to get current price: %w", err)
+	}
+
+	return tb.tradeExecutor.ForceClosePosition(currentPrice)
 }

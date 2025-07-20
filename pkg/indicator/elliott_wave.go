@@ -615,9 +615,9 @@ func (ew *ElliottWave) analyzeCurrentWave() (SignalType, float64) {
 		if ew.currentWave.Count == Wave5 && ew.currentWave.IsComplete {
 			// End of impulse wave - expect reversal
 			if ew.currentWave.EndPrice > ew.currentWave.StartPrice {
-				return Sell, confidence * ew.config.ImpulseBoost // Bullish impulse ending
+				return Sell, math.Min(confidence*ew.config.ImpulseBoost, 0.85) // FIXED: Cap to 0.85
 			} else {
-				return Buy, confidence * ew.config.ImpulseBoost // Bearish impulse ending
+				return Buy, math.Min(confidence*ew.config.ImpulseBoost, 0.85) // FIXED: Cap to 0.85
 			}
 		}
 
@@ -625,9 +625,9 @@ func (ew *ElliottWave) analyzeCurrentWave() (SignalType, float64) {
 		if ew.currentWave.Count == WaveC && ew.currentWave.IsComplete {
 			// End of correction - expect resumption of trend
 			if ew.currentWave.EndPrice > ew.currentWave.StartPrice {
-				return Sell, confidence * ew.config.CorrectionBoost // Upward correction ending
+				return Sell, math.Min(confidence*ew.config.CorrectionBoost, 0.85) // FIXED: Cap to 0.85
 			} else {
-				return Buy, confidence * ew.config.CorrectionBoost // Downward correction ending
+				return Buy, math.Min(confidence*ew.config.CorrectionBoost, 0.85) // FIXED: Cap to 0.85
 			}
 		}
 
@@ -635,9 +635,9 @@ func (ew *ElliottWave) analyzeCurrentWave() (SignalType, float64) {
 		if ew.currentWave.IsComplete {
 			// Extended wave completion - strong reversal signal
 			if ew.currentWave.EndPrice > ew.currentWave.StartPrice {
-				return Sell, confidence * ew.config.CompletionBoost
+				return Sell, math.Min(confidence*ew.config.CompletionBoost, 0.85) // FIXED: Cap to 0.85
 			} else {
-				return Buy, confidence * ew.config.CompletionBoost
+				return Buy, math.Min(confidence*ew.config.CompletionBoost, 0.85) // FIXED: Cap to 0.85
 			}
 		}
 	}

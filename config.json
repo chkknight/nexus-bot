@@ -1,106 +1,100 @@
 {
-  "rsi": {
-    "enabled": true,
-    "period": 8,
-    "overbought": 75,
-    "oversold": 25
-  },
-  "macd": {
-    "enabled": true,
-    "fast_period": 8,
-    "slow_period": 17,
-    "signal_period": 6
-  },
-  "volume": {
-    "enabled": true,
-    "period": 20,
-    "volume_threshold": 15000
-  },
-  "trend": {
-    "enabled": true,
-    "short_ma": 8,
-    "long_ma": 21
-  },
-  "support_resistance": {
-    "enabled": true,
-    "period": 20,
-    "threshold": 0.02
-  },
-  "ichimoku": {
-    "enabled": true,
-    "tenkan_period": 6,
-    "kijun_period": 18,
-    "senkou_period": 36,
-    "displacement": 18
-  },
-  "mfi": {
-    "enabled": true,
-    "period": 14,
-    "overbought": 80,
-    "oversold": 20
-  },
-  "bollinger_bands": {
-    "enabled": true,
-    "period": 10,
-    "standard_dev": 1.8,
-    "overbought_std": 0.75,
-    "oversold_std": 0.25
-  },
-  "stochastic": {
-    "k_period": 7,
-    "d_period": 3,
-    "slow_period": 3,
-    "overbought": 85,
-    "oversold": 15,
-    "momentum_boost": 1.3,
-    "divergence_boost": 1.4,
-    "enabled": true
-  },
-  "williams_r": {
-    "period": 7,
-    "overbought": -15,
-    "oversold": -85,
-    "fast_response": true,
-    "momentum_boost": 1.4,
-    "reversal_boost": 1.5,
-    "enabled": true
-  },
-  "pin_bar": {
-    "enabled": true,
-    "min_wick_ratio": 2.0,
-    "max_body_ratio": 0.33,
-    "min_range_percent": 0.001,
-    "support_resistance": true,
-    "trend_confirmation": true,
-    "pattern_strength_boost": 1.2
-  },
-  "ema": {
-    "enabled": true,
-    "fast_period": 8,
-    "slow_period": 17,
-    "signal_period": 6,
-    "trend_period": 34,
-    "slope_threshold": 0.0002,
-    "crossover_boost": 1.4,
-    "trend_boost": 1.3,
-    "volume_confirm": true
-  },
-  "elliott_wave": {
-    "enabled": true,
-    "min_wave_length": 5,
-    "fibonacci_tolerance": 0.1,
-    "trend_strength": 0.02,
-    "impulse_boost": 1.4,
-    "correction_boost": 1.2,
-    "completion_boost": 1.5,
-    "max_lookback": 100
-  },
-  "min_confidence": 0.6,
-  "symbol": "BTCUSDT",
   "binance": {
-    "api_key": "",
-    "secret_key": "",
-    "use_testnet": false
+    "api_key": "your_binance_api_key",
+    "secret_key": "your_binance_secret_key",
+    "testnet": true
   },
-  "data_provider": "binance"
+  "trading": {
+    "symbol": "BTCUSDT",
+    "candle_limit": 500,
+    "timeframes": ["5m", "15m", "45m", "8h", "1d"],
+    "indicators": {
+      "rsi": {
+        "enabled": true,
+        "period": 14,
+        "overbought": 80,
+        "oversold": 20
+      },
+      "macd": {
+        "enabled": true,
+        "fast_period": 12,
+        "slow_period": 26,
+        "signal_period": 9
+      },
+      "volume": {
+        "enabled": true,
+        "period": 20,
+        "threshold": 2.0
+      },
+      "trend": {
+        "enabled": true,
+        "short_period": 10,
+        "long_period": 25,
+        "strength_threshold": 0.005
+      },
+      "support_resistance": {
+        "enabled": true,
+        "lookback_period": 50,
+        "min_touches": 3,
+        "threshold": 0.01
+      },
+      "ichimoku": {
+        "enabled": true,
+        "tenkan_period": 9,
+        "kijun_period": 26,
+        "senkou_span_b_period": 52
+      },
+      "reverse_mfi": {
+        "enabled": true,
+        "period": 14,
+        "oversold_threshold": 20,
+        "overbought_threshold": 80
+      },
+      "bollinger_bands": {
+        "enabled": true,
+        "period": 25,
+        "std_dev": 2.5,
+        "squeeze_threshold": 0.02
+      },
+      "stochastic": {
+        "enabled": true,
+        "k_period": 18,
+        "d_period": 5,
+        "smooth": 3,
+        "overbought": 85,
+        "oversold": 15
+      },
+      "williams_r": {
+        "enabled": true,
+        "period": 14,
+        "overbought": -20,
+        "oversold": -80
+      },
+      "pin_bar": {
+        "enabled": true,
+        "body_ratio": 0.3,
+        "wick_ratio": 2.5
+      },
+      "ema": {
+        "enabled": true,
+        "short_period": 12,
+        "long_period": 26
+      },
+      "elliott_wave": {
+        "enabled": true,
+        "min_wave_size": 0.01,
+        "max_wave_count": 5
+      },
+      "atr": {
+        "enabled": true,
+        "period": 4,
+        "multiplier": 2.1,
+        "use_shorts": false
+      }
+    }
+  },
+  "api": {
+    "port": 8080,
+    "rate_limit": 100
+  }
 }
