@@ -9,82 +9,82 @@
     "candle_limit": 500,
     "timeframes": ["5m", "15m", "45m", "8h", "1d"],
     "indicators": {
-      "rsi": {
-        "enabled": true,
+  "rsi": {
+    "enabled": true,
         "period": 14,
         "overbought": 80,
         "oversold": 20
-      },
-      "macd": {
-        "enabled": true,
+  },
+  "macd": {
+    "enabled": true,
         "fast_period": 12,
         "slow_period": 26,
         "signal_period": 9
-      },
-      "volume": {
-        "enabled": true,
-        "period": 20,
+  },
+  "volume": {
+    "enabled": true,
+    "period": 20,
         "threshold": 2.0
-      },
-      "trend": {
-        "enabled": true,
+  },
+  "trend": {
+    "enabled": true,
         "short_period": 10,
         "long_period": 25,
         "strength_threshold": 0.005
-      },
-      "support_resistance": {
-        "enabled": true,
+  },
+  "support_resistance": {
+    "enabled": true,
         "lookback_period": 50,
         "min_touches": 3,
         "threshold": 0.01
-      },
-      "ichimoku": {
-        "enabled": true,
+  },
+  "ichimoku": {
+    "enabled": true,
         "tenkan_period": 9,
         "kijun_period": 26,
         "senkou_span_b_period": 52
-      },
+  },
       "reverse_mfi": {
-        "enabled": true,
-        "period": 14,
+    "enabled": true,
+    "period": 14,
         "oversold_threshold": 20,
         "overbought_threshold": 80
-      },
-      "bollinger_bands": {
-        "enabled": true,
+  },
+  "bollinger_bands": {
+    "enabled": true,
         "period": 25,
         "std_dev": 2.5,
         "squeeze_threshold": 0.02
-      },
-      "stochastic": {
+  },
+  "stochastic": {
         "enabled": true,
         "k_period": 18,
         "d_period": 5,
         "smooth": 3,
-        "overbought": 85,
+    "overbought": 85,
         "oversold": 15
-      },
-      "williams_r": {
+  },
+  "williams_r": {
         "enabled": true,
         "period": 14,
         "overbought": -20,
         "oversold": -80
-      },
-      "pin_bar": {
-        "enabled": true,
+  },
+  "pin_bar": {
+    "enabled": true,
         "body_ratio": 0.3,
         "wick_ratio": 2.5
-      },
-      "ema": {
-        "enabled": true,
+  },
+  "ema": {
+    "enabled": true,
         "short_period": 12,
         "long_period": 26
-      },
-      "elliott_wave": {
-        "enabled": true,
+  },
+  "elliott_wave": {
+    "enabled": true,
         "min_wave_size": 0.01,
         "max_wave_count": 5
-      },
+  },
       "atr": {
         "enabled": true,
         "period": 4,
